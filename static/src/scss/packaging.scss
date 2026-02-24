@@ -1,0 +1,28 @@
+// Packaging selector on product page
+.oo_packaging_selector_wrapper {
+    .oo_packaging_select {
+        max-width: 100%;
+    }
+
+    .oo_packaging_discount_badge {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--o-success, #0d6e42);
+    }
+}
+
+// Cart line: packaging info and discount badge
+.o_wsale_line_packaging_info {
+    margin-top: 0.25rem;
+
+    .o_wsale_line_discount_badge {
+        font-size: 0.75rem;
+    }
+}
+
+// Price with discount: optional strikethrough for original price
+.o_wsale_line_original_price {
+    text-decoration: line-through;
+    color: var(--o-text-muted, #6c757d);
+    margin-right: 0.35rem;
+}

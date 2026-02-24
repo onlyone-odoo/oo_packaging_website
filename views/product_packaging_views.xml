@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="product_packaging_list_view_stock_inherit_website_packaging" model="ir.ui.view">
+        <field name="name">product.packaging.list.view.stock.website.packaging</field>
+        <field name="model">product.packaging</field>
+        <field name="inherit_id" ref="stock.product_packaging_tree_view"/>
+        <field name="priority">20</field>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='qty']" position="after">
+                <field name="packaging_discount" optional="show"/>
+                <field name="website_published" optional="show"/>
+                <field name="website_ids" widget="many2many_tags" optional="hide"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="oo_packaging_website.PackagingSelectorTemplate">
+        <div id="oo_packaging_selector_wrapper" class="mb-3 oo_packaging_selector_wrapper">
+            <input type="hidden" name="packaging_id" id="oo_packaging_id_input" t-att-value="state.selectedPackagingId" />
+            <label class="form-label" for="oo_packaging_select">
+                Packaging
+            </label>
+            <select id="oo_packaging_select" name="packaging_id_select" class="form-select oo_packaging_select" t-on-change="onSelectChange">
+                <option value="">
+                    Unit
+                </option>
+                <t t-foreach="availablePackagings" t-as="pkg" t-key="pkg.id">
+                    <option t-att-value="pkg.id">
+                        <t t-esc="pkg.name"/> (<t t-esc="pkg.qty"/> <t t-esc="pkg.uom_name"/>)
+                        <t t-if="pkg.discount">
+                            — <t t-esc="pkg.discount"/>% discount
+                        </t>
+                    </option>
+                </t>
+            </select>
+            <div id="oo_packaging_discount_badge" class="oo_packaging_discount_badge mt-1" t-att-style="state.currentDiscount > 0 ? '' : 'display: none;'">
+                <t t-if="state.currentDiscount > 0">
+                    Save <t t-esc="state.currentDiscount"/>%
+                </t>
+            </div>
+        </div>
+    </t>
+</templates>
