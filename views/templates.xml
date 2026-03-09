@@ -20,7 +20,7 @@
 
     <!-- Cart: show packaging and discount per line -->
     <template id="cart_lines_inherit_website_packaging" inherit_id="website_sale.cart_lines" name="Cart line packaging info">
-        <xpath expr="//div[contains(@class, 'o_wsale_product_name') or contains(@class, 'product_name')]" position="after">
+        <xpath expr="//t[@t-as='line']" position="inside">
             <t t-set="line_packaging" t-value="line.product_packaging_id"/>
             <div class="o_wsale_line_packaging_info text-muted small" t-if="line_packaging">
                 <span class="o_wsale_line_packaging_name" t-field="line_packaging.name"/>
