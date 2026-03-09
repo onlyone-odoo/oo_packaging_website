@@ -1,5 +1,7 @@
 # License LGPL-3.0 or later (https://www.gnu.org/licenses/lgpl-3.0.html).
 
+import json
+
 from odoo import http
 from odoo.http import request
 from odoo.addons.website_sale.controllers.main import WebsiteSale
@@ -17,7 +19,6 @@ class WebsiteSalePackaging(WebsiteSale):
             bin_size=False
         )
         website = request.website
-        import json
         website_packagings_by_variant = {}
         for variant in product.product_variant_ids:
             packagings = Packaging._get_website_packagings(variant, website)
@@ -32,6 +33,9 @@ class WebsiteSalePackaging(WebsiteSale):
                 for p in packagings
             ]
         values["website_packagings_by_variant"] = website_packagings_by_variant
+        values["website_packagings_by_variant_json"] = json.dumps(
+            {"packagingsByVariant": website_packagings_by_variant}
+        )
         values["has_website_packagings"] = any(website_packagings_by_variant.values())
         return values
 

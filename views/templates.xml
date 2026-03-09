@@ -5,7 +5,7 @@
     <template id="product_inherit_website_packaging" inherit_id="website_sale.product" name="Product packaging selector">
         <xpath expr="//form[contains(@action, '/shop/cart/update')]//input[@name='add_qty']" position="before">
             <t t-if="has_website_packagings">
-                <owl-component name="oo_packaging_website.PackagingSelector" t-att-props="{'packagingsByVariant': website_packagings_by_variant}"/>
+                <owl-component name="oo_packaging_website.PackagingSelector" t-att-props="website_packagings_by_variant_json"/>
             </t>
         </xpath>
     </template>
