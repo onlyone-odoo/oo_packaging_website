@@ -1,11 +1,23 @@
-// Packaging selector on product page
+// Packaging selector on product page (inline with quantity controls)
+#add_to_cart_wrap {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.oo_packaging_selector_inline {
+    display: inline-flex;
+    align-items: center;
+}
+
 .oo_packaging_selector_wrapper {
     .oo_packaging_select {
-        max-width: 100%;
+        min-width: 8rem;
+        max-width: 12rem;
     }
 
     .oo_packaging_discount_badge {
-        font-size: 0.9rem;
+        font-size: 0.85rem;
         font-weight: 600;
         color: var(--o-success, #0d6e42);
     }
