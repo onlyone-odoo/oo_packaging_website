@@ -1,3 +1,5 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_product_packaging_public,product.packaging.public,product.model_product_packaging,base.group_public,1,0,0,0
 access_product_packaging_portal,product.packaging.portal,product.model_product_packaging,base.group_portal,1,0,0,0
+access_uom_uom_public,uom.uom.public,uom.model_uom_uom,base.group_public,1,0,0,0
+access_uom_uom_portal,uom.uom.portal,uom.model_uom_uom,base.group_portal,1,0,0,0
