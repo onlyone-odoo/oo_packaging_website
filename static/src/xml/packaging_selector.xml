@@ -3,25 +3,25 @@
     <t t-name="oo_packaging_website.PackagingSelectorTemplate">
         <div id="oo_packaging_selector_wrapper" class="oo_packaging_selector_wrapper d-inline-flex flex-nowrap align-items-center">
             <input type="hidden" name="packaging_id" id="oo_packaging_id_input" t-att-value="state.selectedPackagingId" />
-            <label class="form-label mb-0 me-2 text-nowrap" for="oo_packaging_select">
-                Packaging
-            </label>
             <select id="oo_packaging_select" name="packaging_id_select" class="form-select form-select-sm oo_packaging_select" t-on-change="onSelectChange">
-                <option value="">
-                    Unit
-                </option>
+                <t t-if="!props.forcePackaging">
+                    <option value="" t-att-selected="!state.selectedPackagingId ? 'selected' : undefined">
+                        Unit
+                    </option>
+                </t>
                 <t t-foreach="availablePackagings" t-as="pkg" t-key="pkg.id">
-                    <option t-att-value="pkg.id">
+                    <option t-att-value="pkg.id"
+                            t-att-selected="String(pkg.id) === state.selectedPackagingId ? 'selected' : undefined">
                         <t t-esc="pkg.name"/> (<t t-esc="pkg.qty"/> <t t-esc="pkg.uom_name"/>)
                         <t t-if="pkg.discount">
-                            — <t t-esc="pkg.discount"/>% discount
+                            — <t t-esc="pkg.discount"/>% dto.
                         </t>
                     </option>
                 </t>
             </select>
             <div id="oo_packaging_discount_badge" class="oo_packaging_discount_badge ms-2 small" t-att-style="state.currentDiscount > 0 ? '' : 'display: none;'">
                 <t t-if="state.currentDiscount > 0">
-                    Save <t t-esc="state.currentDiscount"/>%
+                    -<t t-esc="state.currentDiscount"/>%
                 </t>
             </div>
         </div>

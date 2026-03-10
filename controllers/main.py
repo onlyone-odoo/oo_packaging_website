@@ -32,9 +32,13 @@ class WebsiteSalePackaging(WebsiteSale):
                 }
                 for p in packagings
             ]
+        force_packaging = bool(product.website_force_packaging)
         values["website_packagings_by_variant"] = website_packagings_by_variant
         values["website_packagings_by_variant_json"] = json.dumps(
-            {"packagingsByVariant": website_packagings_by_variant}
+            {
+                "packagingsByVariant": website_packagings_by_variant,
+                "forcePackaging": force_packaging,
+            }
         )
         values["has_website_packagings"] = any(website_packagings_by_variant.values())
         return values

@@ -9,7 +9,7 @@
     "website": "https://onlyone.odoo.com/",
     "license": "AGPL-3",
     "category": "Website/Website",
-    "version": "18.0.2.2.0",
+    "version": "18.0.3.3.0",
     "development_status": "Production/Stable",
     "application": False,
     "installable": True,
