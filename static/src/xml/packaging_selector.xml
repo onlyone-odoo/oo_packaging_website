@@ -11,7 +11,7 @@
                 </t>
                 <t t-foreach="availablePackagings" t-as="pkg" t-key="pkg.id">
                     <option t-att-value="pkg.id"
-                            t-att-selected="String(pkg.id) === state.selectedPackagingId ? 'selected' : undefined">
+                            t-att-selected="('' + pkg.id) === state.selectedPackagingId ? 'selected' : undefined">
                         <t t-esc="pkg.name"/> (<t t-esc="pkg.qty"/> <t t-esc="pkg.uom_name"/>)
                         <t t-if="pkg.discount">
                             — <t t-esc="pkg.discount"/>% dto.
