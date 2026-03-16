@@ -2,12 +2,18 @@
 <odoo>
 
 
-    <!-- product_quantity places css_quantity as a sibling BEFORE add_to_cart_wrap -->
-    <template id="product_inherit_website_packaging" inherit_id="website_sale.product_quantity" name="Product packaging selector">
+    <!-- Packaging selector se coloca ANTES del css_quantity (heredando del mismo padre que el quantity) -->
+    <template 
+        id="product_inherit_website_packaging" 
+        inherit_id="website_sale.product" 
+        name="Product packaging selector">
+
         <xpath expr="//div[contains(@class, 'css_quantity')]" position="before">
             <t t-if="has_website_packagings">
                 <div class="oo_packaging_selector_inline me-2 mb-2 align-middle">
-                    <owl-component name="oo_packaging_website.PackagingSelector" t-att-props="website_packagings_by_variant_json"/>
+                    <owl-component 
+                        name="oo_packaging_website.PackagingSelector" 
+                        t-att-props="website_packagings_by_variant_json"/>
                 </div>
             </t>
         </xpath>
