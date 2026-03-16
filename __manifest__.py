@@ -13,10 +13,7 @@
     "development_status": "Production/Stable",
     "application": False,
     "installable": True,
-    "external_dependencies": {
-        "python": [],
-        "bin": [],
-    },
+
     "depends": ["website_sale", "stock"],
     "data": [
         "security/ir.model.access.csv",
