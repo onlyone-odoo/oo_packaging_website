@@ -52,11 +52,19 @@ class SaleOrder(models.Model):
         packaging_id=None,
         **kwargs
     ):
-        """Pass packaging_id through to line creation/update."""
+        """Pass packaging_id through and enforce packaging qty multiples."""
         packaging_id = product_packaging_id or packaging_id
         if packaging_id is not None:
             kwargs["product_packaging_id"] = int(packaging_id)
             kwargs["packaging_id"] = int(packaging_id)
+
+        set_qty = float(set_qty or 0)
+        if set_qty > 0 and line_id:
+            line = self.env["sale.order.line"].browse(int(line_id)).exists()
+            if line.product_packaging_id and line.product_packaging_id.qty:
+                step = line.product_packaging_id.qty
+                set_qty = max(step, round(set_qty / step) * step)
+
         return super()._cart_update(
             product_id=product_id,
             line_id=line_id,

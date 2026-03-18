@@ -9,7 +9,7 @@
     "website": "https://onlyone.odoo.com/",
     "license": "AGPL-3",
     "category": "Website/Website",
-    "version": "18.0.3.3.0",
+    "version": "18.0.4.0.0",
     "development_status": "Production/Stable",
     "application": False,
     "installable": True,
@@ -24,6 +24,7 @@
         "web.assets_frontend": [
             "oo_packaging_website/static/src/xml/packaging_selector.xml",
             "oo_packaging_website/static/src/js/packaging_selector.js",
+            "oo_packaging_website/static/src/js/cart_packaging_qty.js",
             "oo_packaging_website/static/src/scss/packaging.scss",
         ],
     },

@@ -17,6 +17,19 @@
         </xpath>
     </template>
 
+    <!-- Cart: inject packaging step into the quantity input so JS can
+         enforce +/- by packaging qty instead of ±1. -->
+    <template
+        id="cart_lines_packaging_step"
+        inherit_id="website_sale.cart_lines"
+        name="Cart packaging quantity step">
+        <xpath expr="//input[contains(@class, 'js_quantity')]" position="attributes">
+            <attribute name="t-att-data-packaging-qty">
+                line.product_packaging_id.qty if line.product_packaging_id else 0
+            </attribute>
+        </xpath>
+    </template>
+
     <!-- Labels for packaging (so they can be overridden/translated) -->
     <template id="o_wsale_product_packaging_label" name="Packaging">
         <t t-out="'Packaging'"/>
