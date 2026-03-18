@@ -38,4 +38,24 @@
         <t t-out="'Unit'"/>
     </template>
 
+    <!-- Display packaging info and discount badge in cart lines -->
+    <template
+        id="cart_line_packaging_info"
+        inherit_id="website_sale.cart_lines"
+        name="Cart line packaging info">
+        <xpath expr="//div[contains(@class, 'o_wsale_product_name') or contains(@class, 'product-name')]" position="after">
+            <t t-if="line.product_packaging_id">
+                <div class="o_wsale_line_packaging_info small text-muted">
+                    <t t-call="o_wsale_product_packaging_label"/>:
+                    <strong><t t-esc="line.product_packaging_id.name"/></strong>
+                    <t t-if="line.discount &gt; 0">
+                        <span class="o_wsale_line_discount_badge badge bg-success ms-1">
+                            -<t t-esc="line.discount"/>%
+                        </span>
+                    </t>
+                </div>
+            </t>
+        </xpath>
+    </template>
+
 </odoo>

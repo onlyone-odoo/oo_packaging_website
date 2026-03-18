@@ -54,8 +54,9 @@ Usage
 Known issues / Roadmap
 ======================
 
-* The discount is applied to the sale order line and replaces any manual discount. If the quantity is manually changed in the cart and no longer matches the packaging multiple, the packaging and its discount will be automatically removed by standard Odoo logic.
-* Future roadmap: Allow stacking manual discounts with packaging discounts if needed.
+* The discount applied to the sale order line replaces any manual discount (standard behavior). If the quantity no longer matches the packaging multiple in the cart, the packaging association and discount are cleared by Odoo's core logic.
+* Cart quantity stepper and packaging display have been improved in the `18.0_refactor` branch.
+* Future roadmap: Allow stacking manual discounts with packaging discounts.
 
 Bug Tracker
 ===========

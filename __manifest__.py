@@ -1,6 +1,6 @@
-# pylint: disable=missing-module-docstring,pointless-statement
-# License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
+# License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl-3.0.html).
 {
+
     "name": "Website Packaging with Discount",
     "summary": """
         Product packaging selector with discounts for eCommerce""",
