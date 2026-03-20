@@ -46,7 +46,7 @@
         <xpath expr="//div[@name='o_wsale_cart_line_button_container']" position="before">
             <t t-if="line.product_packaging_id">
                 <div class="o_wsale_line_packaging_info small text-muted mt-1">
-                    <t t-call="o_wsale_product_packaging_label"/>:
+                    <t t-call="oo_packaging_website.o_wsale_product_packaging_label"/>:
                     <strong><t t-esc="line.product_packaging_id.name"/></strong>
                     <t t-if="line.discount &gt; 0">
                         <span class="o_wsale_line_discount_badge badge bg-success ms-1">
