@@ -11,7 +11,11 @@ class WebsiteSalePackaging(WebsiteSale):
     """Pass packaging_id from request to cart update for website packaging selector."""
 
     def _prepare_product_values(self, product, category, search, **kwargs):
-        """Add website packagings per variant for the product page."""
+        """Add website packagings per variant for the product page.
+
+        Only variants that actually have published packagings will show the selector.
+        This fixes the bug where packagings from one variant appeared on others.
+        """
         values = super()._prepare_product_values(
             product, category, search, **kwargs
         )
@@ -20,9 +24,11 @@ class WebsiteSalePackaging(WebsiteSale):
         )
         website = request.website
         website_packagings_by_variant = {}
+        has_any_packaging = False
+
         for variant in product.product_variant_ids:
             packagings = Packaging._get_website_packagings(variant, website)
-            website_packagings_by_variant[variant.id] = [
+            data = [
                 {
                     "id": p.id,
                     "name": p.name,
@@ -32,6 +38,10 @@ class WebsiteSalePackaging(WebsiteSale):
                 }
                 for p in packagings
             ]
+            website_packagings_by_variant[variant.id] = data
+            if data:
+                has_any_packaging = True
+
         force_packaging = bool(product.website_force_packaging)
         values["website_packagings_by_variant"] = website_packagings_by_variant
         values["website_packagings_by_variant_json"] = json.dumps(
@@ -40,7 +50,7 @@ class WebsiteSalePackaging(WebsiteSale):
                 "forcePackaging": force_packaging,
             }
         )
-        values["has_website_packagings"] = any(website_packagings_by_variant.values())
+        values["has_website_packagings"] = has_any_packaging
         return values
 
     @http.route()
@@ -54,9 +64,15 @@ class WebsiteSalePackaging(WebsiteSale):
         packaging_id=None,
         **kwargs
     ):
+        """Validate that the packaging belongs to the selected product variant."""
         if packaging_id is not None:
-            kwargs["packaging_id"] = int(packaging_id)
-            kwargs["product_packaging_id"] = int(packaging_id)
+            packaging = request.env["product.packaging"].browse(int(packaging_id)).exists()
+            if packaging and packaging.product_id.id != int(product_id):
+                # Invalid packaging for this variant - ignore it
+                packaging_id = None
+            else:
+                kwargs["packaging_id"] = int(packaging_id)
+                kwargs["product_packaging_id"] = int(packaging_id)
         return super().cart_update(
             product_id=product_id,
             add_qty=add_qty,
@@ -77,9 +93,14 @@ class WebsiteSalePackaging(WebsiteSale):
         packaging_id=None,
         **kwargs
     ):
+        """Validate that the packaging belongs to the selected product variant."""
         if packaging_id is not None:
-            kwargs["packaging_id"] = int(packaging_id)
-            kwargs["product_packaging_id"] = int(packaging_id)
+            packaging = request.env["product.packaging"].browse(int(packaging_id)).exists()
+            if packaging and packaging.product_id.id != int(product_id):
+                packaging_id = None  # Invalid for this variant
+            else:
+                kwargs["packaging_id"] = int(packaging_id)
+                kwargs["product_packaging_id"] = int(packaging_id)
         return super().cart_update_json(
             product_id=product_id,
             line_id=line_id,

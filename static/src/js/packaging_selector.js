@@ -52,8 +52,9 @@ export class PackagingSelector extends Component {
                         this.productIdInput.value,
                         10
                     );
+                    // Reset invalid packaging when variant changes
                     const selectedId = parseInt(this.state.selectedPackagingId, 10);
-                    if (!this.availablePackagings.find((p) => p.id === selectedId)) {
+                    if (selectedId && !this.availablePackagings.find((p) => p.id === selectedId)) {
                         this._applyPackaging(null);
                     }
                 });
