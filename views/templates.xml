@@ -43,9 +43,10 @@
         id="cart_line_packaging_info"
         inherit_id="website_sale.cart_lines"
         name="Cart line packaging info">
-        <xpath expr="//div[contains(@class, 'o_wsale_product_name') or contains(@class, 'product-name')]" position="after">
+        <!-- More robust XPath for Odoo 18 cart lines. Targets the product name cell. -->
+        <xpath expr="//td[contains(@class, 'td-name') or contains(@class, 'name')]" position="after">
             <t t-if="line.product_packaging_id">
-                <div class="o_wsale_line_packaging_info small text-muted">
+                <div class="o_wsale_line_packaging_info small text-muted mt-1">
                     <t t-call="o_wsale_product_packaging_label"/>:
                     <strong><t t-esc="line.product_packaging_id.name"/></strong>
                     <t t-if="line.discount &gt; 0">
