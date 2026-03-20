@@ -23,7 +23,7 @@
         id="cart_lines_packaging_step"
         inherit_id="website_sale.cart_lines"
         name="Cart packaging quantity step">
-        <xpath expr="//input[contains(@class, 'js_quantity')]" position="attributes">
+        <xpath expr="//input[hasclass('js_quantity')]" position="attributes">
             <attribute name="t-att-data-packaging-qty">
                 line.product_packaging_id.qty if line.product_packaging_id else 0
             </attribute>
@@ -38,13 +38,12 @@
         <t t-out="'Unit'"/>
     </template>
 
-    <!-- Display packaging info and discount badge in cart lines -->
+    <!-- Display packaging info and discount badge in cart lines (Odoo 18: flex layout, no table). -->
     <template
         id="cart_line_packaging_info"
         inherit_id="website_sale.cart_lines"
         name="Cart line packaging info">
-        <!-- More robust XPath for Odoo 18 cart lines. Targets the product name cell. -->
-        <xpath expr="//td[contains(@class, 'td-name') or contains(@class, 'name')]" position="after">
+        <xpath expr="//div[@name='o_wsale_cart_line_button_container']" position="before">
             <t t-if="line.product_packaging_id">
                 <div class="o_wsale_line_packaging_info small text-muted mt-1">
                     <t t-call="o_wsale_product_packaging_label"/>:
