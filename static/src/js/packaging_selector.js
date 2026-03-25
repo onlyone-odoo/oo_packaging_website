@@ -1,12 +1,6 @@
 /** @odoo-module **/
 
-import {
-    Component,
-    useState,
-    onMounted,
-    onWillUnmount,
-    useRef,
-} from "@odoo/owl";
+import { Component, useState, onMounted, onWillUnmount } from "@odoo/owl";
 import { registry } from "@web/core/registry";
 
 export class PackagingSelector extends Component {
@@ -14,22 +8,15 @@ export class PackagingSelector extends Component {
     static props = {
         packagingsByVariant: { type: Object, optional: true },
         forcePackagingByVariant: { type: Object, optional: true },
-        /** @deprecated Legacy single flag; use forcePackagingByVariant when possible. */
         forcePackaging: { type: Boolean, optional: true },
-        initialVariantId: { type: Number, optional: true },
     };
 
     setup() {
-        this.rootRef = useRef("root");
-        const initialVid =
-            this.props.initialVariantId != null &&
-            !Number.isNaN(Number(this.props.initialVariantId))
-                ? Number(this.props.initialVariantId)
-                : null;
         this.state = useState({
-            currentProductId: initialVid,
+            currentProductId: null,
             selectedPackagingId: "",
             currentDiscount: 0,
+            visible: false,
         });
 
         this.form = null;
@@ -40,9 +27,9 @@ export class PackagingSelector extends Component {
         this._boundHandlers = [];
 
         onMounted(() => {
-            const el = this.rootRef.el;
-            if (el) {
-                this.form = el.closest("form");
+            const wrapper = document.getElementById("oo_packaging_selector_wrapper");
+            if (wrapper) {
+                this.form = wrapper.closest("form");
             }
             if (!this.form) return;
 
@@ -61,10 +48,7 @@ export class PackagingSelector extends Component {
             }
 
             if (this.productIdInput) {
-                const fromForm = parseInt(this.productIdInput.value, 10);
-                if (!Number.isNaN(fromForm)) {
-                    this.state.currentProductId = fromForm;
-                }
+                this.state.currentProductId = parseInt(this.productIdInput.value, 10);
                 this._addListener(this.productIdInput, "change", () => {
                     this.state.currentProductId = parseInt(
                         this.productIdInput.value,
@@ -97,7 +81,10 @@ export class PackagingSelector extends Component {
                 );
             }
 
-            this._onVariantChanged();
+            this._syncVisibility();
+            if (this.forcePackagingForCurrentVariant && this.availablePackagings.length) {
+                this._applyPackaging(this.availablePackagings[0]);
+            }
         });
 
         onWillUnmount(() => {
@@ -125,17 +112,11 @@ export class PackagingSelector extends Component {
         return Boolean(this.props.forcePackaging);
     }
 
-    get showPackagingUi() {
-        return this.availablePackagings.length > 0;
-    }
-
     get availablePackagings() {
         if (!this.state.currentProductId || !this.props.packagingsByVariant) {
             return [];
         }
-        return (
-            this.props.packagingsByVariant[this.state.currentProductId] || []
-        );
+        return this.props.packagingsByVariant[this.state.currentProductId] || [];
     }
 
     get selectedPackaging() {
@@ -147,7 +128,12 @@ export class PackagingSelector extends Component {
         );
     }
 
+    _syncVisibility() {
+        this.state.visible = this.availablePackagings.length > 0;
+    }
+
     _onVariantChanged() {
+        this._syncVisibility();
         if (!this.availablePackagings.length) {
             this._applyPackaging(null);
             return;
@@ -197,7 +183,7 @@ export class PackagingSelector extends Component {
 
     /**
      * Intercept +/- clicks: when a packaging is active, step by packaging qty
-     * instead of the default ±1 behaviour.
+     * instead of the default +/-1 behaviour.
      */
     _onStepClick(e, direction) {
         const pkg = this.selectedPackaging;

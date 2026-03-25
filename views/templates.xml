@@ -8,9 +8,11 @@
         name="Product packaging selector">
         <xpath expr="//div[contains(@t-attf-class, 'css_quantity')]" position="before">
             <t t-if="has_website_packagings">
-                <owl-component
-                    name="oo_packaging_website.PackagingSelector"
-                    t-att-props="website_packagings_by_variant_json"/>
+                <div class="oo_packaging_selector_inline me-2 mb-2 align-middle">
+                    <owl-component
+                        name="oo_packaging_website.PackagingSelector"
+                        t-att-props="website_packagings_by_variant_json"/>
+                </div>
             </t>
         </xpath>
     </template>
