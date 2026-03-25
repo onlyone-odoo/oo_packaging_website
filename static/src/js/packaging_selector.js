@@ -1,18 +1,33 @@
 /** @odoo-module **/
 
-import { Component, useState, onMounted, onWillUnmount } from "@odoo/owl";
+import {
+    Component,
+    useState,
+    onMounted,
+    onWillUnmount,
+    useRef,
+} from "@odoo/owl";
 import { registry } from "@web/core/registry";
 
 export class PackagingSelector extends Component {
     static template = "oo_packaging_website.PackagingSelectorTemplate";
     static props = {
         packagingsByVariant: { type: Object, optional: true },
+        forcePackagingByVariant: { type: Object, optional: true },
+        /** @deprecated Legacy single flag; use forcePackagingByVariant when possible. */
         forcePackaging: { type: Boolean, optional: true },
+        initialVariantId: { type: Number, optional: true },
     };
 
     setup() {
+        this.rootRef = useRef("root");
+        const initialVid =
+            this.props.initialVariantId != null &&
+            !Number.isNaN(Number(this.props.initialVariantId))
+                ? Number(this.props.initialVariantId)
+                : null;
         this.state = useState({
-            currentProductId: null,
+            currentProductId: initialVid,
             selectedPackagingId: "",
             currentDiscount: 0,
         });
@@ -25,9 +40,9 @@ export class PackagingSelector extends Component {
         this._boundHandlers = [];
 
         onMounted(() => {
-            const wrapper = document.getElementById("oo_packaging_selector_wrapper");
-            if (wrapper) {
-                this.form = wrapper.closest("form");
+            const el = this.rootRef.el;
+            if (el) {
+                this.form = el.closest("form");
             }
             if (!this.form) return;
 
@@ -46,17 +61,16 @@ export class PackagingSelector extends Component {
             }
 
             if (this.productIdInput) {
-                this.state.currentProductId = parseInt(this.productIdInput.value, 10);
+                const fromForm = parseInt(this.productIdInput.value, 10);
+                if (!Number.isNaN(fromForm)) {
+                    this.state.currentProductId = fromForm;
+                }
                 this._addListener(this.productIdInput, "change", () => {
                     this.state.currentProductId = parseInt(
                         this.productIdInput.value,
                         10
                     );
-                    // Reset invalid packaging when variant changes
-                    const selectedId = parseInt(this.state.selectedPackagingId, 10);
-                    if (selectedId && !this.availablePackagings.find((p) => p.id === selectedId)) {
-                        this._applyPackaging(null);
-                    }
+                    this._onVariantChanged();
                 });
             }
 
@@ -83,9 +97,7 @@ export class PackagingSelector extends Component {
                 );
             }
 
-            if (this.props.forcePackaging && this.availablePackagings.length) {
-                this._applyPackaging(this.availablePackagings[0]);
-            }
+            this._onVariantChanged();
         });
 
         onWillUnmount(() => {
@@ -101,11 +113,29 @@ export class PackagingSelector extends Component {
         this._boundHandlers.push({ el, event, handler, capture });
     }
 
+    get forcePackagingForCurrentVariant() {
+        const vid = this.state.currentProductId;
+        const byVar = this.props.forcePackagingByVariant;
+        if (byVar && vid != null) {
+            const flag = byVar[vid];
+            if (flag !== undefined) {
+                return Boolean(flag);
+            }
+        }
+        return Boolean(this.props.forcePackaging);
+    }
+
+    get showPackagingUi() {
+        return this.availablePackagings.length > 0;
+    }
+
     get availablePackagings() {
         if (!this.state.currentProductId || !this.props.packagingsByVariant) {
             return [];
         }
-        return this.props.packagingsByVariant[this.state.currentProductId] || [];
+        return (
+            this.props.packagingsByVariant[this.state.currentProductId] || []
+        );
     }
 
     get selectedPackaging() {
@@ -115,6 +145,24 @@ export class PackagingSelector extends Component {
                 (p) => p.id === parseInt(this.state.selectedPackagingId, 10)
             ) || null
         );
+    }
+
+    _onVariantChanged() {
+        if (!this.availablePackagings.length) {
+            this._applyPackaging(null);
+            return;
+        }
+        if (this.forcePackagingForCurrentVariant) {
+            this._applyPackaging(this.availablePackagings[0]);
+            return;
+        }
+        const selectedId = parseInt(this.state.selectedPackagingId, 10);
+        if (
+            selectedId &&
+            !this.availablePackagings.find((p) => p.id === selectedId)
+        ) {
+            this._applyPackaging(null);
+        }
     }
 
     onSelectChange(ev) {
@@ -138,7 +186,7 @@ export class PackagingSelector extends Component {
         } else {
             this.state.selectedPackagingId = "";
             this.state.currentDiscount = 0;
-            if (this.quantityInput && !this.props.forcePackaging) {
+            if (this.quantityInput && !this.forcePackagingForCurrentVariant) {
                 this.quantityInput.value = 1;
                 this.quantityInput.dispatchEvent(
                     new Event("change", { bubbles: true })

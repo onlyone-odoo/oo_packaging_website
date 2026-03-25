@@ -42,12 +42,21 @@ class WebsiteSalePackaging(WebsiteSale):
             if data:
                 has_any_packaging = True
 
-        force_packaging = bool(product.website_force_packaging)
+        force_packaging_by_variant = {
+            v.id: bool(v.website_force_packaging)
+            for v in product.product_variant_ids
+        }
+        comb = values.get("combination_info") or {}
+        initial_variant_id = comb.get("product_id")
+        if not initial_variant_id and product.product_variant_ids:
+            initial_variant_id = product.product_variant_ids[0].id
+
         values["website_packagings_by_variant"] = website_packagings_by_variant
         values["website_packagings_by_variant_json"] = json.dumps(
             {
                 "packagingsByVariant": website_packagings_by_variant,
-                "forcePackaging": force_packaging,
+                "forcePackagingByVariant": force_packaging_by_variant,
+                "initialVariantId": initial_variant_id,
             }
         )
         values["has_website_packagings"] = has_any_packaging
