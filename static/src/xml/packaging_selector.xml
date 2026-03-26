@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates xml:space="preserve">
     <t t-name="oo_packaging_website.PackagingSelectorTemplate">
-        <div id="oo_packaging_selector_wrapper"
-             class="oo_packaging_selector_wrapper d-inline-flex flex-nowrap align-items-center"
-             t-att-style="state.visible ? '' : 'display: none;'">
+        <div id="oo_packaging_selector_wrapper" class="oo_packaging_selector_wrapper d-inline-flex flex-nowrap align-items-center">
             <input type="hidden" name="packaging_id" id="oo_packaging_id_input" t-att-value="state.selectedPackagingId" />
             <select id="oo_packaging_select" name="packaging_id_select" class="form-select form-select-sm oo_packaging_select" t-on-change="onSelectChange">
                 <t t-if="!forcePackagingForCurrentVariant">

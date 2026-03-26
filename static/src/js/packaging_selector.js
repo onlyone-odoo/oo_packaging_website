@@ -16,7 +16,6 @@ export class PackagingSelector extends Component {
             currentProductId: null,
             selectedPackagingId: "",
             currentDiscount: 0,
-            visible: false,
         });
 
         this.form = null;
@@ -81,7 +80,7 @@ export class PackagingSelector extends Component {
                 );
             }
 
-            this._syncVisibility();
+            this._updateSelectorVisibility();
             if (this.forcePackagingForCurrentVariant && this.availablePackagings.length) {
                 this._applyPackaging(this.availablePackagings[0]);
             }
@@ -128,12 +127,18 @@ export class PackagingSelector extends Component {
         );
     }
 
-    _syncVisibility() {
-        this.state.visible = this.availablePackagings.length > 0;
+    _updateSelectorVisibility() {
+        const parent = document.querySelector(".oo_packaging_selector_inline");
+        if (!parent) return;
+        if (this.availablePackagings.length > 0) {
+            parent.classList.remove("d-none");
+        } else {
+            parent.classList.add("d-none");
+        }
     }
 
     _onVariantChanged() {
-        this._syncVisibility();
+        this._updateSelectorVisibility();
         if (!this.availablePackagings.length) {
             this._applyPackaging(null);
             return;
@@ -183,7 +188,7 @@ export class PackagingSelector extends Component {
 
     /**
      * Intercept +/- clicks: when a packaging is active, step by packaging qty
-     * instead of the default +/-1 behaviour.
+     * instead of the default ±1 behaviour.
      */
     _onStepClick(e, direction) {
         const pkg = this.selectedPackaging;
