@@ -38,8 +38,6 @@ class SaleOrder(models.Model):
             if packaging and packaging.product_id.id == product_id:
                 values["product_packaging_id"] = packaging.id
                 values["product_packaging_qty"] = quantity / packaging.qty
-                if getattr(packaging, "packaging_discount", 0):
-                    values["discount"] = packaging.packaging_discount
         return values
 
     def _cart_update(

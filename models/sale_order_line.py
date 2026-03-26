@@ -6,18 +6,23 @@ from odoo import api, models
 class SaleOrderLine(models.Model):
     _inherit = "sale.order.line"
 
-    def write(self, vals):
-        """Apply or clear packaging discount when product_packaging_id changes.
+    @api.depends("product_packaging_id")
+    def _compute_discount(self):
+        """Extend discount computation to apply packaging discount.
 
-        We copy vals to avoid mutating the caller's dictionary (good practice).
-        This works for both single and multi-record writes.
+        The core compute sets discount from pricelist rules. We override it
+        to use the packaging_discount when a packaging with a discount is
+        selected, taking the higher of the two (pricelist vs packaging).
         """
-        if "product_packaging_id" in vals and "discount" not in vals:
-            packaging_id = vals.get("product_packaging_id")
-            packaging = self.env["product.packaging"].browse(packaging_id).exists()
-            discount = packaging.packaging_discount if packaging else 0.0
-            vals = dict(vals, discount=discount)
-        return super().write(vals)
+        super()._compute_discount()
+        for line in self:
+            if not line.product_packaging_id:
+                continue
+            pkg_discount = getattr(
+                line.product_packaging_id, "packaging_discount", 0
+            )
+            if pkg_discount and pkg_discount > line.discount:
+                line.discount = pkg_discount
 
     @api.onchange("product_packaging_id")
     def _onchange_product_packaging_id_packaging_discount(self):
@@ -26,5 +31,3 @@ class SaleOrderLine(models.Model):
             self.product_packaging_id, "packaging_discount", 0
         ):
             self.discount = self.product_packaging_id.packaging_discount
-        elif self.product_packaging_id:
-            self.discount = 0.0
