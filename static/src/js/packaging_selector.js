@@ -9,6 +9,7 @@ export class PackagingSelector extends Component {
         packagingsByVariant: { type: Object, optional: true },
         forcePackagingByVariant: { type: Object, optional: true },
         forcePackaging: { type: Boolean, optional: true },
+        initialVariantId: { type: Number, optional: true },
     };
 
     setup() {
@@ -46,8 +47,14 @@ export class PackagingSelector extends Component {
                 }
             }
 
-            if (this.productIdInput) {
+            // Use initialVariantId from props if available, otherwise read from form
+            if (this.props.initialVariantId) {
+                this.state.currentProductId = this.props.initialVariantId;
+            } else if (this.productIdInput) {
                 this.state.currentProductId = parseInt(this.productIdInput.value, 10);
+            }
+
+            if (this.productIdInput) {
                 this._addListener(this.productIdInput, "change", () => {
                     this.state.currentProductId = parseInt(
                         this.productIdInput.value,

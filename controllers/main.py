@@ -24,7 +24,7 @@ class WebsiteSalePackaging(WebsiteSale):
         )
         website = request.website
         website_packagings_by_variant = {}
-        has_any_packaging = False
+        has_website_packagings = False
 
         for variant in product.product_variant_ids:
             packagings = Packaging._get_website_packagings(variant, website)
@@ -40,21 +40,33 @@ class WebsiteSalePackaging(WebsiteSale):
             ]
             website_packagings_by_variant[variant.id] = data
             if data:
-                has_any_packaging = True
+                has_website_packagings = True
 
         force_packaging_by_variant = {
             v.id: bool(v.website_force_packaging)
             for v in product.product_variant_ids
         }
 
+        # Determine if the initial variant (the one shown on page load) has packagings
+        # This makes the selector appear only for variants that actually have them
+        comb = values.get("combination_info") or {}
+        initial_variant_id = comb.get("product_id")
+        if not initial_variant_id and product.product_variant_ids:
+            initial_variant_id = product.product_variant_ids[0].id
+
+        initial_has_packagings = bool(
+            initial_variant_id and website_packagings_by_variant.get(initial_variant_id)
+        )
+
         values["website_packagings_by_variant"] = website_packagings_by_variant
         values["website_packagings_by_variant_json"] = json.dumps(
             {
                 "packagingsByVariant": website_packagings_by_variant,
                 "forcePackagingByVariant": force_packaging_by_variant,
+                "initialVariantId": initial_variant_id,
             }
         )
-        values["has_website_packagings"] = has_any_packaging
+        values["has_website_packagings"] = initial_has_packagings
         return values
 
     @http.route()
