@@ -64,6 +64,21 @@ export class PackagingSelector extends Component {
                 });
             }
 
+            // Also listen for Odoo website variant change events (more robust)
+            const form = this.form;
+            if (form) {
+                this._addListener(form, "change", (e) => {
+                    if (e.target.name === "product_id" || e.target.closest("[name='product_id']")) {
+                        const productIdInput = form.querySelector("input[name='product_id']");
+                        if (productIdInput) {
+                            this.state.currentProductId = parseInt(productIdInput.value, 10);
+                            this._onVariantChanged();
+                        }
+                    }
+                });
+            }
+
+
             if (this.minusBtn) {
                 this._addListener(
                     this.minusBtn,
