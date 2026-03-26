@@ -47,26 +47,14 @@ class WebsiteSalePackaging(WebsiteSale):
             for v in product.product_variant_ids
         }
 
-        # Determine if the initial variant (the one shown on page load) has packagings
-        # This makes the selector appear only for variants that actually have them
-        comb = values.get("combination_info") or {}
-        initial_variant_id = comb.get("product_id")
-        if not initial_variant_id and product.product_variant_ids:
-            initial_variant_id = product.product_variant_ids[0].id
-
-        initial_has_packagings = bool(
-            initial_variant_id and website_packagings_by_variant.get(initial_variant_id)
-        )
-
         values["website_packagings_by_variant"] = website_packagings_by_variant
         values["website_packagings_by_variant_json"] = json.dumps(
             {
                 "packagingsByVariant": website_packagings_by_variant,
                 "forcePackagingByVariant": force_packaging_by_variant,
-                "initialVariantId": initial_variant_id,
             }
         )
-        values["has_website_packagings"] = initial_has_packagings
+        values["has_website_packagings"] = has_website_packagings
         return values
 
     @http.route()

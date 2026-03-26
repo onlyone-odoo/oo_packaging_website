@@ -9,7 +9,6 @@ export class PackagingSelector extends Component {
         packagingsByVariant: { type: Object, optional: true },
         forcePackagingByVariant: { type: Object, optional: true },
         forcePackaging: { type: Boolean, optional: true },
-        initialVariantId: { type: Number, optional: true },
     };
 
     setup() {
@@ -47,37 +46,22 @@ export class PackagingSelector extends Component {
                 }
             }
 
-            // Use initialVariantId from props if available, otherwise read from form
-            if (this.props.initialVariantId) {
-                this.state.currentProductId = this.props.initialVariantId;
-            } else if (this.productIdInput) {
-                this.state.currentProductId = parseInt(this.productIdInput.value, 10);
-            }
-
             if (this.productIdInput) {
-                this._addListener(this.productIdInput, "change", () => {
-                    this.state.currentProductId = parseInt(
-                        this.productIdInput.value,
-                        10
-                    );
-                    this._onVariantChanged();
-                });
-            }
+                this.state.currentProductId = parseInt(this.productIdInput.value, 10);
 
-            // Also listen for Odoo website variant change events (more robust)
-            const form = this.form;
-            if (form) {
-                this._addListener(form, "change", (e) => {
-                    if (e.target.name === "product_id" || e.target.closest("[name='product_id']")) {
-                        const productIdInput = form.querySelector("input[name='product_id']");
-                        if (productIdInput) {
-                            this.state.currentProductId = parseInt(productIdInput.value, 10);
-                            this._onVariantChanged();
-                        }
+                // Odoo's sale_variant_mixin updates product_id via jQuery
+                // .val().trigger('change') — jQuery events are NOT caught by
+                // native addEventListener, so we MUST use jQuery .on() here.
+                const $input = $(this.productIdInput);
+                this._onProductIdChange = () => {
+                    const newId = parseInt(this.productIdInput.value, 10);
+                    if (!isNaN(newId) && newId !== this.state.currentProductId) {
+                        this.state.currentProductId = newId;
+                        this._onVariantChanged();
                     }
-                });
+                };
+                $input.on("change.oo_packaging", this._onProductIdChange);
             }
-
 
             if (this.minusBtn) {
                 this._addListener(
@@ -113,6 +97,9 @@ export class PackagingSelector extends Component {
                 el.removeEventListener(event, handler, capture);
             }
             this._boundHandlers = [];
+            if (this.productIdInput) {
+                $(this.productIdInput).off("change.oo_packaging");
+            }
         });
     }
 
